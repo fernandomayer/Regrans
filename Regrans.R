@@ -7,8 +7,9 @@ for(i in nrow(x)) {
 	left <- x[1:i,]
 	right <- x[i+1:nrow(x),]
 	nam.left <- paste("mod.left", i, sep = ".")
-	nam.right <- paste("mod.right", i, sep = ".") 
+	nam.right <- paste("mod.right", i, sep = ".")
 	print(assign(nam.left, 1:i)) <- with(left, lm(Y ~ X))
 	print(assign(nam.right, 1:i)) <- with(right, lm(Y ~ X))
 }
 
+rnorm(10)
