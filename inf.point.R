@@ -1,42 +1,47 @@
-## Entrada dos dados
-dados <- read.csv2("FLA.csv") # Base de dados teste - Deep-sea crabs
+#######################################################################
+# Regrans: a analitic package to segmented regressions
+#######################################################################
 
-# Plot logaritmizados das variáveis Largura do Abdome (LA) em função da
-# Largura da Carapaça (LC)
-plot(log(LA) ~ log(LC), data=dados)
+# Loading Deep-sea crabs database for testing analisys
+dados <- read.csv2("FLA.csv")
 
-# Histograma das variáveis Largura do Abdome (LA) e Largura da Carapaça
-# (LC)
+# Graphic to data visualization - AW - Abdome Width vs CW - Carapace
+# Width
+plot(log(AW) ~ log(CW), data = dados)
+
+# Log of variables target (AW and CW) histograms
 par(mfrow=c(1,2))
-hist(log(dados$LA))
-hist(log(dados$LC))
+hist(log(dados$AW), main = "Abdome Width", xlab = "AW", ylab =
+     "Frequency", col = "gray")
+hist(log(dados$CW), main = "Carapace Width", xlab = "CW", ylab =
+     "Frequency", col = "gray")
 par(mfrow=c(1,1))
 
-# Novo objeto contendo as variáveis LC e LA logaritmizadas e ordenadas
-# em ordem crescente de largura da carapaça
-dados2 <- dados[order(dados$LC),]
+# New object with logaritmized variables and classified by Carapace
+# Width
+dados2 <- dados[order(dados$CW),]
 dados2[,1] <- log10(dados2[,1])
 dados2[,2] <- log10(dados2[,2])
 
-## Criação de um novo objeto para receber os dados do looping a seguir
+## Calls a new object to receive data from looping
 saida <- data.frame(SQResL = numeric(0), aL = numeric(0), bL =
                     numeric(0), nL = numeric(0), SQResR = numeric(0), aR
                     = numeric(0), bR = numeric(0), nR = numeric(0))
 
-## Looping para as estimação das regressões lineares iterativas
-for(i in 3:(nrow(dados2)-2)){
-    regL <- lm(LA[1:i] ~ LC[1:i], data = dados2)
-    regR <- lm(LA[(i+1):(nrow(dados2)-2)] ~ LC[(i+1):(nrow(dados2)-2)],
+## Looping to estimate the iteractive linear models (regressions)
+for(i in 5:(nrow(dados2)-5)){
+    regL <- lm(AW[1:i] ~ CW[1:i], data = dados2)
+    regR <- lm(AW[(i+1):(nrow(dados2))] ~ CW[(i+1):(nrow(dados2))],
                     data = dados2)
     SQResL <- sum(residuals(regL)^2)
     SQResR <- sum(residuals(regR)^2)
     saida <- rbind(saida, data.frame(SQResL = SQResL, aL =
                     coef(regL)[1], bL = coef(regL)[2], nL =
-                    length(dados2$LA[1:i]), SQResR = SQResR, aR =
+                    length(dados2$CW[1:i]), SQResR = SQResR, aR =
                     coef(regR)[1], bR = coef(regR)[2], nR =
-                    length(dados2$LA[(i+1):(nrow(dados2)-2)])))
+                    length(dados2$CW[(i+1):(nrow(dados2))])))
 }
 
-row.names(saida) <- NULL # Preenche os nomes das linhas com uma
-                         # sequencia númerica continua iniciando de 1.
+# Remove names of rows!
+row.names(saida) <- NULL
 
