@@ -12,4 +12,3 @@ for(i in nrow(x)) {
 	print(assign(nam.right, 1:i)) <- with(right, lm(Y ~ X))
 }
 
-rnorm(10)
