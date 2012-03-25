@@ -1,0 +1,25 @@
+#################################################################
+# Regrans: a analitic package for segmented regressions         
+# Developed in BASIC by: Paulo Ricardo Pezzuto (1993)                    
+# Adapted and Powered to R by: Fernando Mayer (2012) and Rodrigo
+# Sant'Ana (2012)                                               
+# ###############################################################
+
+## First steps!!
+
+# Loading files from FLA.csv
+dados <- read.table("FLA.csv", header = TRUE, sep = ";", dec = ",")
+
+mod.left <- 0
+mod.right <- 0
+
+for(i in nrow(dados)) {
+	left <- dados[1:i,]
+	right <- dados[i+1:nrow(dados),]
+	nam.left <- paste("mod.left", i, sep = ".")
+	nam.right <- paste("mod.right", i, sep = ".")
+	print(assign(nam.left, 1:i)) <- with(left, lm(LA ~ LC))
+	print(assign(nam.right, 1:i)) <- with(right, lm(LA ~ LC))
+}
+
+rnorm(10)
