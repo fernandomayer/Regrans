@@ -20,28 +20,47 @@ par(mfrow=c(1,1))
 # New object with logaritmized variables and classified by Carapace
 # Width
 dados2 <- dados[order(dados$CW),]
-dados2[,1] <- log10(dados2[,1])
-dados2[,2] <- log10(dados2[,2])
+dados2$lCW <- log10(dados2$CW)
+dados2$lAW <- log10(dados2$AW)
+
+par(mfrow=c(1,2))
+plot(AW ~ CW, data = dados2)
+plot(lAW ~ lCW, data = dados2)
+par(mfrow=c(1,1))
+
+teste <- lm(lAW ~ lCW, data = dados2)
+coef(teste)
 
 ## Calls a new object to receive data from looping
-saida <- data.frame(SQResL = numeric(0), aL = numeric(0), bL =
-                    numeric(0), nL = numeric(0), SQResR = numeric(0), aR
-                    = numeric(0), bR = numeric(0), nR = numeric(0))
+saida <- data.frame(SSResL = numeric(0), aL = numeric(0),
+                    bL = numeric(0), nL = numeric(0),
+                    SSResR = numeric(0), aR = numeric(0),
+                    bR = numeric(0), nR = numeric(0))
+
+## define n.min = the minimum number of points for a regression
+n.min <- 3
 
 ## Looping to estimate the iteractive linear models (regressions)
-for(i in 5:(nrow(dados2)-5)){
-    regL <- lm(AW[1:i] ~ CW[1:i], data = dados2)
-    regR <- lm(AW[(i+1):(nrow(dados2))] ~ CW[(i+1):(nrow(dados2))],
-                    data = dados2)
-    SQResL <- sum(residuals(regL)^2)
-    SQResR <- sum(residuals(regR)^2)
-    saida <- rbind(saida, data.frame(SQResL = SQResL, aL =
-                    coef(regL)[1], bL = coef(regL)[2], nL =
-                    length(dados2$CW[1:i]), SQResR = SQResR, aR =
-                    coef(regR)[1], bR = coef(regR)[2], nR =
-                    length(dados2$CW[(i+1):(nrow(dados2))])))
+for(i in n.min:(nrow(dados2)-n.min)){
+    regL <- lm(lAW[1:i] ~ lCW[1:i], data = dados2)
+    regR <- lm(lAW[(i+1):(nrow(dados2))] ~ lCW[(i+1):(nrow(dados2))],
+               data = dados2)
+    SSResL <- sum(residuals(regL)^2)
+    SSResR <- sum(residuals(regR)^2)
+    saida <- rbind(saida,
+                   data.frame(SSResL = SSResL,
+                              aL = coef(regL)[1],
+                              bL = coef(regL)[2],
+                              nL = length(residuals(regL)),
+                              SSResR = SSResR,
+                              aR = coef(regR)[1],
+                              bR = coef(regR)[2],
+                              nR =length(residuals(regR))))
 }
-
-# Remove names of rows!
+# Remove rownames
 row.names(saida) <- NULL
+
+## check the minimum value of SSR
+saida[saida$SSResL == min(saida$SSResL), ]
+saida[saida$SSResR == min(saida$SSResR), ]
 
