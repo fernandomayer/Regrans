@@ -60,7 +60,7 @@ for(i in n.min:(nrow(dados2)-n.min)){
 # Remove rownames
 row.names(saida) <- NULL
 
-## check the minimum value of SSQ
+## check the minimum value of SSR
 saida[saida$SSResL == min(saida$SSResL), ]
 saida[saida$SSResR == min(saida$SSResR), ]
 
